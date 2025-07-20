@@ -263,7 +263,7 @@ if __name__ == "__main__":
     logger = Logger(path=f"runs/{args.n}")
     # copy config file
     shutil.copy(args.config_path, f"runs/{args.n}/config.yaml")
-    if conf.Task == "BS":
+    if conf.Task == "BSRID":
         # getting action_dim with dummy env
         dummy_env = build_single_env(args.env_name, conf.BasicSettings.ImageSize, seed=0)
         action_dim = dummy_env.action_space.n
