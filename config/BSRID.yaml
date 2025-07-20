@@ -1,4 +1,4 @@
-Task: "BS"
+Task: "BSRID"
 
 BasicSettings:
   Seed: 0
@@ -11,7 +11,7 @@ JointTrain:
   BufferWarmUp: 1024
   ContextLength: 16
   NumEnvs: 1
-  RID: 1
+  RID: 2
   BatchSize: 16
   BatchLength: 64
   ImagineBatchSize: 1024
