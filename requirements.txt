@@ -39,9 +39,6 @@ sympy==1.13.3
 tensorboard==2.19.0
 tensorboard-data-server==0.7.2
 tensorboardX==2.6.2.2
-torch
-torchaudio
-torchvision
 tqdm==4.67.1
 triton==2.1.0
 typing_extensions==4.13.1
