@@ -21,7 +21,7 @@ import math
 
 def newton_cooling_analytic(T0, Tenv, k, t):
     """
-    牛顿冷却定律的解析解
+    牛顿冷却定律
     :param T0: 初始温度
     :param Tenv: 环境温度
     :param k: 冷却系数
@@ -207,7 +207,7 @@ def joint_train_world_model_agent(env_name, context_length, balanced_sample, rid
         # save model and eval per episode
         if step % (save_every_steps // num_envs) == 0:
             temperature = math.ceil(newton_cooling_analytic(200000, Tenv, 0.1, (step // save_every_steps + 1)))
-            print(f"temperature: {temperature}" + f" rid: {rid}")
+            print(f"\nTemperature: {temperature}" + f"\nThe number of times of reusing imagined data: {rid}")
             print(colorama.Fore.GREEN + f"\nSaving model at total steps {step}" + colorama.Style.RESET_ALL)
             torch.save(world_model.state_dict(), f"ckpt/{args.n}/world_model_{step}.pth")
             torch.save(agent.state_dict(), f"ckpt/{args.n}/agent_{step}.pth")
@@ -240,7 +240,7 @@ if __name__ == "__main__":
     # ignore warnings
     import warnings
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+    # os.environ['CUDA_VISIBLE_DEVICES'] = '1'
     warnings.filterwarnings('ignore')
     torch.backends.cuda.matmul.allow_tf32 = True
     torch.backends.cudnn.allow_tf32 = True
@@ -307,6 +307,6 @@ if __name__ == "__main__":
     else:
         raise NotImplementedError(f"Task {conf.Task} not implemented")
 
-    game_name = args.n
-    game_name = game_name.split('-')
-    run_eval(game_name[0])
+    # game_name = args.n
+    # game_name = game_name.split('-')
+    # run_eval(game_name[0])
