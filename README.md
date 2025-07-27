@@ -4,6 +4,7 @@
 Clone the git repository.
 
 git clone https://github.com/wwwqqyy/BSRID.git
+
 cd BSRID
 
 Install the required packages.
