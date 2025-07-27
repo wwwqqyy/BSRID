@@ -123,8 +123,8 @@ if __name__ == "__main__":
     world_model = train.build_world_model(conf, action_dim)
     agent = train.build_agent(conf, action_dim)
 
-    # root_path = f"ckpt/{args.run_name}"
-    root_path = f"weights/{args.run_name}"
+    root_path = f"ckpt/{args.run_name}"
+    # root_path = f"weights/{args.run_name}"
     import glob
 
     paths = glob.glob(f"{root_path}/world_model_*.pth")
