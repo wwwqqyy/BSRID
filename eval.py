@@ -1,6 +1,7 @@
 import argparse
 import os
 from collections import deque
+from tqdm import tqdm
 
 import colorama
 import cv2
@@ -123,33 +124,57 @@ if __name__ == "__main__":
     agent = train.build_agent(conf, action_dim)
 
     # root_path = f"ckpt/{args.run_name}"
-    root_path = f"checkpoints/{args.run_name}"
+    root_path = f"weights/{args.run_name}"
     import glob
 
     paths = glob.glob(f"{root_path}/world_model_*.pth")
     steps = [int(path.split("_")[-1].split(".")[0]) for path in paths]
     steps.sort()
-    # print(steps)
-    results = []
-    for step in steps:
-        world_model.load_state_dict(torch.load(f"{root_path}/world_model_{step}.pth"))
-        agent.load_state_dict(torch.load(f"{root_path}/agent_{step}.pth"))
-        # # eval
-        episode_return = eval_episodes(
-            num_episode=20,
-            env_name=args.env_name,
-            num_envs=5,
-            context_length=conf.JointTrain.ContextLength,
-            image_size=conf.BasicSettings.ImageSize,
-            world_model=world_model,
-            agent=agent,
-            step=step,
-        )
-        results.append([step, episode_return])
-
+    
+    # Number of times to repeat the evaluation process
+    num_evaluation_runs = 3
+    
+    # Create a directory for evaluation results if it doesn't exist
     if not os.path.exists("eval_result_last"):
         os.mkdir("eval_result_last")
-
-    with open(f"eval_result_last/{args.run_name}.txt", "a") as f:
-        for step, episode_return in results:
-            f.write(f"{step},{episode_return}\n")
+    
+    # Create a progress bar for the evaluation runs (outer loop)
+    print(f"Starting {num_evaluation_runs} evaluation runs...")
+    run_progress_bar = tqdm(range(num_evaluation_runs), desc="Evaluation Runs", unit="run")
+    
+    # Store results for all runs
+    all_results = {}
+    
+    for run_idx in run_progress_bar:
+        # Update the progress bar description with current run index (1-based)
+        run_progress_bar.set_postfix({"Current Run": f"{run_idx + 1}/{num_evaluation_runs}"})
+        
+        print(f"\nStarting evaluation run {run_idx + 1}/{num_evaluation_runs}")
+        
+        run_results = []
+        for step in steps:
+            world_model.load_state_dict(torch.load(f"{root_path}/world_model_{step}.pth"))
+            agent.load_state_dict(torch.load(f"{root_path}/agent_{step}.pth"))
+            
+            # eval
+            episode_return = eval_episodes(
+                num_episode=20,
+                env_name=args.env_name,
+                num_envs=5,
+                context_length=conf.JointTrain.ContextLength,
+                image_size=conf.BasicSettings.ImageSize,
+                world_model=world_model,
+                agent=agent,
+                step=step,
+            )
+            run_results.append([step, episode_return])
+            
+            # Save results for this run
+            result_filename = f"eval_result_last/{args.run_name}_run{run_idx + 1}.txt"
+            with open(result_filename, "w") as f:
+                for step, episode_return in run_results:
+                    f.write(f"{step},{episode_return}\n")
+        
+        print(f"Evaluation run {run_idx + 1}/{num_evaluation_runs} completed!")
+    
+    print("All evaluation runs completed!")
